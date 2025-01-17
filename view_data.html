@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Family Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        img {
+            width: 50px;  /* Adjust this to suit the size of the image */
+            height: auto;
+            border-radius: 50%;
+        }
+        /* Modal styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin - View Family Data</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Ward Name</th>
+                <th>Head of Family Name</th>
+                <th>Your Name</th>
+                <th>Relationship</th>
+                <th>Blood Group</th>
+                <th>Photo</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="dataBody"></tbody>
+    </table>
+    <button onclick="window.location.href='index.html'">Go to Home</button>
+
+    <!-- Modal for displaying details -->
+    <div id="familyMemberModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Family Member Details</h2>
+            <p><strong>Ward Name:</strong> <span id="modalWardName"></span></p>
+            <p><strong>Head of Family Name:</strong> <span id="modalHeadName"></span></p>
+            <p><strong>Your Name:</strong> <span id="modalName"></span></p>
+            <p><strong>Relationship:</strong> <span id="modalRelationship"></span></p>
+            <p><strong>Blood Group:</strong> <span id="modalBloodGroup"></span></p>
+            <p><strong>Photo:</strong> <img id="modalPhoto" style="width:150px;" alt="Family Member Photo"></p>
+            <p><strong>Age:</strong> <span id="modalAge"></span></p>
+            <p><strong>Address:</strong> <span id="modalAddress"></span></p>
+           
+        </div>
+    </div>
+
+    <script>
+        // Retrieve the family data from localStorage or initialize as an empty array if not available
+        var familyData = JSON.parse(localStorage.getItem('familyData')) || [];
+
+        var dataBody = document.getElementById('dataBody');
+
+        // Populate the table with data from familyData
+        familyData.forEach(function(member) {
+            var row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${member.ward_name}</td>
+                <td>${member.head_name}</td>
+                <td>${member.name}</td>
+                <td>${member.relationship}</td>
+                <td>${member.blood_group}</td>
+                <td><img src="${member.photo}" alt="Photo of ${member.name}"></td>
+                <td><button onclick="viewDetails('${member.name}')">View</button></td>
+            `;
+            dataBody.appendChild(row);
+        });
+
+        // Function to handle the "View" button click
+        function viewDetails(name) {
+            // Find the member by name
+            var member = familyData.find(function(member) {
+                return member.name === name;
+            });
+
+            if (member) {
+                // Calculate age from dob
+                var dob = new Date(member.dob);
+                var age = calculateAge(dob);
+
+                // Populate modal with family member details
+                document.getElementById('modalWardName').innerText = member.ward_name;
+                document.getElementById('modalHeadName').innerText = member.head_name;
+                document.getElementById('modalName').innerText = member.name;
+                document.getElementById('modalRelationship').innerText = member.relationship;
+                document.getElementById('modalBloodGroup').innerText = member.blood_group;
+                document.getElementById('modalPhoto').src = member.photo;
+                document.getElementById('modalAge').innerText = age;
+                document.getElementById('modalAddress').innerText = member.address;
+                
+              
+
+                // Display the modal
+                document.getElementById('familyMemberModal').style.display = "block";
+            }
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('familyMemberModal').style.display = "none";
+        }
+
+        // Close the modal if the user clicks outside of it
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('familyMemberModal')) {
+                closeModal();
+            }
+        }
+
+        // Function to calculate age from the date of birth
+        function calculateAge(dob) {
+            var today = new Date();
+            var age = today.getFullYear() - dob.getFullYear();
+            var m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            return age;
+        }
+    </script>
+</body>
+</html>
