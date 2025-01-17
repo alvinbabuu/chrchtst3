@@ -119,7 +119,7 @@
                 <td>${member.name}</td>
                 <td>${member.relationship}</td>
                 <td>${member.blood_group}</td>
-                <td><img src="${member.photo}" alt="Photo of ${member.name}"></td>
+                <td><img src="${member.photo || 'default-image.jpg'}" alt="Photo of ${member.name}"></td>
                 <td><button onclick="viewDetails('${member.name}')">View</button></td>
             `;
             dataBody.appendChild(row);
@@ -143,7 +143,7 @@
                 document.getElementById('modalName').innerText = member.name;
                 document.getElementById('modalRelationship').innerText = member.relationship;
                 document.getElementById('modalBloodGroup').innerText = member.blood_group;
-                document.getElementById('modalPhoto').src = member.photo;
+                document.getElementById('modalPhoto').src = member.photo || 'default-image.jpg'; // Fallback image
                 document.getElementById('modalAge').innerText = age;
                 document.getElementById('modalAddress').innerText = member.address;
 
